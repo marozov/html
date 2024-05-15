@@ -1,7 +1,7 @@
 #PowerShell скрипт для извлечения данных из AD и конвертации их в JSON
 #DN вашего OU
 $ou = "OU=Пользователи,DC=domen,DC=ru"
-# PowerShell скрипт для извлечения данных из AD и конвертации их в JSON
+
 $users = Get-ADUser -Filter * -SearchBase $ou -Property DisplayName, EmailAddress, OfficePhone, StreetAddress
 
 # Создаем массив объектов для каждого пользователя
