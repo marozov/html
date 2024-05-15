@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sTELs</title>
+	<style>
+	    .contact-header {
+        display: flex;
+        background-color: #f2f2f2; /* Цвет фона для заголовков */
+        padding: 10px;
+        margin-bottom: 5px;
+    }
+
+    .contact-header > div {
+        flex: 1;
+        font-weight: bold; /* Жирное начертание для текста заголовков */
+        text-align: center;
+    }
+
+    #contact-list {
+        display: flex;
+        flex-direction: column;
+        width: 100%; /* Занимает всю ширину родительского элемента */
+    }
+
+    .contact {
+        display: flex;
+        flex-wrap: wrap; /* Позволяет элементам переноситься на следующую строку */
+        gap: 10px; /* Отступы между элементами */
+        margin-bottom: 10px; /* Отступ снизу для каждого контакта */
+    }
+
+    .contact > input,
+    .contact > button {
+        flex: 1; /* Каждый элемент займет равную часть ряда */
+        min-width: 120px; /* Минимальная ширина элементов, чтобы избежать слишком узких полей */
+    }
+
+    .contact > button {
+        white-space: nowrap; /* Предотвращает перенос текста кнопки */
+        flex: none; /* Кнопки не будут растягиваться */
+    }
+
+    /* Стили для кнопки добавления нового контакта */
+    #addContactButton {
+        padding: 10px;
+        margin-top: 20px;
+    }
+</style>
+
+</head>
+<body>
+    <header>
+        <h1>Телефонный справочник</h1>
+
+    </header>
+    <section>
+        <h2>ООО ИК СИБИНТЕК</h2>
+		<!--<input type="file" id="fileInput" />
+        <button onclick="importContacts()">Импортировать контакты</button></br></br>-->
+		<!--<button id="deleteAllContactsButton" onclick="deleteAllContacts()">Удалить все контакты</button>-->
+
+		<input type="text" oninput="filterContacts(this.value.toUpperCase())" placeholder="Фильтр..."></br>
+		<div id="alphabet-index"></br></br>
+		<!-- Добавьте кнопки для всех букв алфавита -->
+		<button onclick="filterContactsByLetter('А')">А</button>
+		<button onclick="filterContactsByLetter('Б')">Б</button>
+		<button onclick="filterContactsByLetter('В')">В</button>
+		<button onclick="filterContactsByLetter('Г')">Г</button>
+		<button onclick="filterContactsByLetter('Д')">Д</button>
+		<button onclick="filterContactsByLetter('Е')">Е</button>
+		<button onclick="filterContactsByLetter('Ё')">Ё</button>
+		<button onclick="filterContactsByLetter('Ж')">Ж</button>
+		<button onclick="filterContactsByLetter('З')">З</button>
+		<button onclick="filterContactsByLetter('И')">И</button>
+		<button onclick="filterContactsByLetter('Й')">Й</button>
+		<button onclick="filterContactsByLetter('К')">К</button>
+		<button onclick="filterContactsByLetter('Л')">Л</button>
+		<button onclick="filterContactsByLetter('М')">М</button>
+		<button onclick="filterContactsByLetter('Н')">Н</button>
+		<button onclick="filterContactsByLetter('О')">О</button>
+		<button onclick="filterContactsByLetter('П')">П</button>
+		<button onclick="filterContactsByLetter('Р')">Р</button>
+		<button onclick="filterContactsByLetter('С')">С</button>
+		<button onclick="filterContactsByLetter('Т')">Т</button>
+		<button onclick="filterContactsByLetter('У')">У</button>
+		<button onclick="filterContactsByLetter('Ф')">Ф</button>
+		<button onclick="filterContactsByLetter('Х')">Х</button>
+		<button onclick="filterContactsByLetter('Ц')">Ц</button>
+		<button onclick="filterContactsByLetter('Ч')">Ч</button>
+		<button onclick="filterContactsByLetter('Ш')">Ш</button>
+		<button onclick="filterContactsByLetter('Щ')">Щ</button>
+		<button onclick="filterContactsByLetter('Ы')">Ы</button>
+		<button onclick="filterContactsByLetter('Ю')">Ю</button>
+		<button onclick="filterContactsByLetter('Я')">Я</button>
+</div></br></br>
+
+    <div class="contact-header">
+        <div>Имя</div>
+        <div>Телефон</div>
+        <div>Адрес</div>
+        <div>Email</div>
+        <div>Действия</div> <!-- Пустой столбец для кнопок редактирования и удаления -->
+    </div>
+    <div id="contact-list">
+        <!-- Контакты будут добавлены здесь -->
+    </div>
+
+        </div></br></br>
+        <button onclick="addContact()">Добавить</button>
+    </section>
+    <footer>
+        <p>&copy; 2024 Организация. Все права защищены.</p>
+    </footer>
+
+    <script>
+        let contactId = 0; // Счетчик для уникальных ID
+
+function addContact(name = '', phone = '', address = '', email = '') {
+    var contactList = document.getElementById('contact-list');
+    var uniqueId = 'contact-' + contactId++;
+    var newContact = document.createElement('div');
+    newContact.setAttribute('class', 'contact');
+    newContact.innerHTML = `
+        <input type="text" id="${uniqueId}-name" placeholder="Имя" value="${name}" />
+        <input type="tel" id="${uniqueId}-phone" placeholder="Телефон" value="${phone}" />
+        <input type="text" id="${uniqueId}-address" placeholder="Адрес" value="${address}" />
+        <input type="email" id="${uniqueId}-email" placeholder="Email" value="${email}" />
+        <button onclick="editContact(this)">Редактировать</button>
+        <button onclick="removeContact(this)">Удалить</button>
+    `;
+    contactList.appendChild(newContact);
+}
+
+        function removeContact(button) {
+            button.parentNode.remove();
+            saveContacts(); // Сохраняем контакты после удаления
+        }
+function importContacts() {
+    var fileInput = document.getElementById('fileInput');
+    var file = fileInput.files[0];
+    if (file) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                var contacts = JSON.parse(e.target.result);
+                contacts.forEach(function(contact) {
+                    addContact(contact.name, contact.phone, contact.address, contact.email);
+                });
+                console.log('Контакты успешно импортированы.');
+            } catch (error) {
+                console.error('Ошибка при чтении JSON:', error);
+            }
+        };
+        reader.onerror = function(error) {
+            console.error('Ошибка при чтении файла:', error);
+        };
+        reader.readAsText(file);
+    } else {
+        console.error('Файл не выбран.');
+    }
+}
+
+function deleteAllContacts() {
+    // Подтверждение удаления
+    if (window.confirm("Вы уверены, что хотите удалить все контакты?")) {
+        var contactList = document.getElementById('contact-list');
+        contactList.innerHTML = ''; // Очистить список контактов
+        saveContacts(); // Сохранить пустой список контактов в LocalStorage
+    }
+}
+
+		
+function saveContacts() {
+    var contacts = [];
+    document.querySelectorAll('#contact-list .contact').forEach(function(contactDiv) {
+        var name = contactDiv.querySelector('input[id$="-name"]').value; // Уникальный селектор для имени
+        var phone = contactDiv.querySelector('input[id$="-phone"]').value; // Уникальный селектор для телефона
+        var address = contactDiv.querySelector('input[id$="-address"]').value; // Уникальный селектор для адреса
+        var email = contactDiv.querySelector('input[id$="-email"]').value; // Уникальный селектор для email
+        contacts.push({ name: name, phone: phone, address: address, email: email });
+    });
+    localStorage.setItem('contacts', JSON.stringify(contacts));
+}
+
+
+        function loadContacts() {
+            var contacts = JSON.parse(localStorage.getItem('contacts')) || [];
+            contacts.forEach(function(contact) {
+                addContact(contact.name, contact.phone, contact.address, contact.email);
+            });
+        }
+
+function filterContactsByLetter(letter) {
+  var contacts = document.querySelectorAll('#contact-list .contact');
+  contacts.forEach(function(contact) {
+    var name = contact.querySelector('input[type="text"]').value.toUpperCase();
+    if (name.startsWith(letter)) {
+      contact.style.display = ""; // Показать контакт
+    } else {
+      contact.style.display = "none"; // Скрыть контакт
+    }
+  });
+}
+
+
+        function searchDirectory() {
+            var input, filter, contacts, i, textValue;
+            input = document.getElementById('searchInput');
+            filter = input.value.toUpperCase();
+            contacts = document.querySelectorAll('#contact-list .contact');
+
+            for (i = 0; i < contacts.length; i++) {
+                textValue = contacts[i].textContent || contacts[i].innerText;
+                if (textValue.toUpperCase().indexOf(filter) > -1) {
+                    contacts[i].style.display = "";
+                } else {
+                    contacts[i].style.display = "none";
+                }
+            }
+        }
+function sortContacts() {
+    var contactsArray = Array.from(document.querySelectorAll('#contact-list .contact'));
+    contactsArray.sort(function(a, b) {
+        var nameA = a.querySelector('input[type="text"]').value.toUpperCase(); // Имя A
+        var nameB = b.querySelector('input[type="text"]').value.toUpperCase(); // Имя B
+        if (nameA < nameB) {
+            return -1;
+        }
+        if (nameA > nameB) {
+            return 1;
+        }
+        return 0;
+    });
+
+    // Очищаем список контактов и добавляем отсортированные контакты обратно
+    var contactList = document.getElementById('contact-list');
+    contactList.innerHTML = '';
+    contactsArray.forEach(function(contact) {
+        contactList.appendChild(contact);
+    });
+}
+
+function filterContacts(filterValue) {
+    var contacts = document.querySelectorAll('#contact-list .contact');
+    contacts.forEach(function(contact) {
+        var name = contact.querySelector('input[type="text"]').value.toUpperCase();
+        var phone = contact.querySelector('input[type="tel"]').value.toUpperCase();
+        var address = contact.querySelector('input[type="text"]').value.toUpperCase();
+        var email = contact.querySelector('input[type="email"]').value.toUpperCase();
+        if (name.indexOf(filterValue) > -1 || phone.indexOf(filterValue) > -1 || address.indexOf(filterValue) > -1 || email.indexOf(filterValue) > -1) {
+            contact.style.display = '';
+        } else {
+            contact.style.display = 'none';
+        }
+    });
+}
+// Загружаем контакты при загрузке страницы
+document.addEventListener('DOMContentLoaded', function() {
+    loadContacts();
+    filterContactsByLetter('А'); // Применяем фильтрацию только после загрузки контактов
+});
+    </script>
+</body>
+</html>
